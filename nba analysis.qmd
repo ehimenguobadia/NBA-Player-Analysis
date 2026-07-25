@@ -1,0 +1,86 @@
+---
+title: "NBA Analysis"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+
+data <- read_csv("nbaplayersdraft.csv")
+```
+
+## Introduction
+
+This report analyzes data from the NBA draft from 1989-2021 so that we're able to analyze the long-term success in scoring among the drafted players who came into the NBA in those years. The main goal of our report and research is to try and identify the players from these draft classes who were able to gain the most career points, and also additionally study if there's a relationship between a player's position in their draft and their overall scoring success. This lastly helps us answer how a player's draft expectations are able to align with the outcomes of their career, as scoring is seen as one of the most valuable metrics of player performance.
+
+## Methods
+
+The dataset was cleaned by removing the missing values, and also selecting the relevant variables. These variables were things like the draft year, the player's name, their total career points, the overall draft pick, the team, and the win shares. He calculated the summary statistics in order to look at how the total career points and the draft position of the players were distributed. Then, there were visualizations of the data with histograms, scatterplots, and bar charts to look at the patterns and relationships inside of the data that we have in order to answer our research question.
+
+## Results
+
+**Top Scorer in Each Draft Year**
+
+```{r}
+top_total_points <- data %>%
+  group_by(year) %>%
+  filter(points == max(points, na.rm = TRUE)) %>%
+  select(year, player, points, overall_pick, team, win_shares) %>%
+  arrange(year)
+
+top_total_points
+```
+
+This table shows the top scorers in each draft class for every year. As you can see, the table goes from 1989, our starting year, to 2021. The highest scorer on this table is Lebron James, the 1st overall pick in the year 2003, and in second is Kobe Bryant, the 13th overall pick in 1996, and then Dirk Nowitski, the 9th overall pick in 1998. Out of all of these players who scored the highest in their draft class each year during their careers, all of them have been a top 10 pick, which essentially means the 10 best players from that draft year (The players drafted as the 1st overall picks were considered the best in their draft class, then it goes down as the numbers get larger. 2nd overall pick is considered the 2nd best player in their draft, etc etc).There are a few outliers, such as a few top scorers from certain years being outside the top 10, but only barely, like the 13th and 15th picks, and one bigger outlier being the 36th pick in 1989.
+
+**Visualization 1: Histogram (Total career points)**
+
+```{r}
+ggplot(data, aes(x = points)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of Total Career Points",
+    x = "Total Career Points",
+    y = "Number of Players"
+  ) +
+  theme_minimal()
+```
+
+The histogram here shows the distribution of all the total career points for NBA players in our group. It's heavily skewed right, with a rapid decrease in the number of players who have scored a certain amount of points as the points get higher, going extremely close to zero quickly. This indicates to us that most players score relatively low career points, however there are of course a small group of players who actually score an extreme amount of points. These people are likely NBA superstars that are commonly seen on TV and popularized, the best of the best in the league. This shows that having a lot of scoring success long-term is extremely rare, and only driven by a few players who are elite. This connects back to the research question because it shows how uncommon it truly is for players to have extremely high career point totals regardless of their draft year.
+
+**Visualization 2: Scatterplot (Draft pick vs points)**
+
+```{r}
+ggplot(data, aes(x = overall_pick, y = points)) +
+  geom_point(alpha = 0.7, color = "darkblue") +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  labs(
+    title = "Draft Pick vs Total Career Points",
+    x = "Overall Draft Pick (Lower = Better)",
+    y = "Total Career Points"
+  ) +
+  theme_minimal()
+```
+
+The scatterplot shows the relationship between the overall draft pick and the total career points scored. The downward trend which is shown by the line of best fit shows that the players who are selected earlier in the draft usually score more career points on average. This makes sense, due to the fact that those selected early in the NBA draft (the lower numbers) are seen as elite talented prospects. However, of course, there can be some outliers as even as the numbers get higher, there are players who still get a high amount of points regardless. This suggests to us that position doesn't always predict what the scoring success of a player will look like in their career. This connects back to the research correctly because it shows how draft position has a big influence on long-term scoring outcomes, with a lower draft number/higher draft position being better, but it also has limitations because it's not perfect in predicting them.
+
+**Visualization 3: Bar chart (Top scorer each draft class)**
+
+```{r}
+ggplot(top_total_points, aes(x = factor(year), y = points, fill = player)) +
+  geom_col() +
+  labs(
+    title = "Top Total Career Points Scorer in Each Draft Class",
+    x = "Draft Year",
+    y = "Total Career Points"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+This bar chart shows how much career points a player was able to score in their draft class. There's an up and down but overall upward trend, all the way to the middle of the graph which is approximately in the early 2000s. After this, it steadily decreases and goes down. However, it's important to note that we're examining these players being drafted or coming into the NBA from 1989-2021, so a lot of these players are still active today, and a significant portion of them, especially most recently, are still early in their careers. This explains the downwards trend as the players who exist in those draft classes haven't spent enough time in the NBA to truly examine their long-term scoring. However, this bar chart does show that as time goes on, scoring increases overall inside of the league by all players, since the middle of the graph, at it's highest yet, are made up of players who have recently finished their careers and have accurate data to give on their long-term point scoring. We predict that as time goes on, the numbers for later years will get much higher.
+
+## Conclusion
+
+This analysis was able to find that most NBA players have usually low career points, however there are high-scoring players who appear later on. This analysis also suggests that there is a strong correlation between a higher place in the draft (a lower draft pick) and overall point-scoring, however there are many exceptions to this all over the place. It also shows that the NBA itself is becoming a more scoring-emphasized league, as the overall point-scoring players of each year continue to increase in points. However, at the same time, our data only focuses on total points and it doesn't account for different factors such as players gaining injuries, or different playing time which affects their scoring amounts. This research could definitely be built on by looking at more areas of performance than just points like steals, blocks, assists, and rebounds, or actually taking career length into consideration, because those are able to give someone a better understanding of their scoring success in a new context.
